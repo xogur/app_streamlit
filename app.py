@@ -41,7 +41,7 @@ def closest_color_name(rgb):
         # 정확한 이름이 없으면 가장 가까운 이름 추정
         min_dist = float('inf')
         closest_name = None
-        for hex_code, name in webcolors.CSS3_HEX_TO_NAMES.items():
+        for name, hex_code in webcolors.CSS3_NAMES_TO_HEX.items():
             r_c, g_c, b_c = webcolors.hex_to_rgb(hex_code)
             dist = (rgb[0] - r_c)**2 + (rgb[1] - g_c)**2 + (rgb[2] - b_c)**2
             if dist < min_dist:
