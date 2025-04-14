@@ -72,7 +72,6 @@ plt.tight_layout()
 st.pyplot(fig)
 
 
-st.set_page_config(layout="wide")
 st.title("🧥 상품 썸네일 기반 인기 순위")
 
 # PostgreSQL 연결
