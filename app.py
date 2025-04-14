@@ -22,9 +22,9 @@ conn.close()
 for idx, row in df.iterrows():
     col1, col2 = st.columns([1, 5])
     with col1:
-        st.image(row['image'], width=100)
+        st.image(row['image_url'], width=100)
     with col2:
         st.markdown(f"**RGB:** ({row['r']}, {row['g']}, {row['b']})")
-        st.markdown(f"`{row['image']}`")
+        st.markdown(f"`{row['image_url']}`")
 
     st.markdown("---")
