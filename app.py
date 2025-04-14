@@ -71,6 +71,36 @@ plt.tight_layout()
 # Streamlit에 출력
 st.pyplot(fig)
 
+
+st.set_page_config(layout="wide")
+st.title("🧥 상품 썸네일 기반 인기 순위")
+
+# PostgreSQL 연결
+conn = psycopg2.connect(
+    host="postgres_custom",
+    port=5432,
+    user="xogur",
+    password="xogur",
+    dbname="deproject"
+)
+
+# 데이터 불러오기
+df_item = pd.read_sql("SELECT * FROM item_trend", conn)
+conn.close()
+
+# 상위 10개 상품 추출
+top10 = df_item.sort_values(by='product_count', ascending=False).head(10).reset_index(drop=True)
+
+# 시각화 구성
+for idx, row in top10.iterrows():
+    col1, col2 = st.columns([1, 4])
+    with col1:
+        st.image(row['image_url'], width=100)
+    with col2:
+        st.markdown(f"**상품명:** {row['product_name']}")
+        st.progress(int(row['product_count']) / top10['product_count'].max())
+
+
 # 시각화
 for idx, row in df.iterrows():
     col1, col2 = st.columns([1, 5])
