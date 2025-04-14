@@ -36,7 +36,7 @@ def closest_color_name(rgb):
     except ValueError:
         min_dist = float('inf')
         closest_name = None
-        for name in webcolors.CSS3_NAMES_TO_HEX:
+        for name in webcolors.names("css3"):
             r_c, g_c, b_c = webcolors.name_to_rgb(name)
             dist = sum((rgb[i] - [r_c, g_c, b_c][i])**2 for i in range(3))
             if dist < min_dist:
@@ -48,7 +48,7 @@ def closest_color_name(rgb):
 if menu == "🎨 색상 분석":
     st.subheader("🎨 색상 군집 분석")
     rgb_array = df_color[['r', 'g', 'b']].values
-    k = 20
+    k = st.sidebar.slider("군집 수 선택 (k)", min_value=2, max_value=30, value=20)
     kmeans = KMeans(n_clusters=k, random_state=42)
     labels = kmeans.fit_predict(rgb_array)
     centroids = kmeans.cluster_centers_.astype(int)
@@ -80,11 +80,9 @@ elif menu == "🧥 인기 상품 보기":
 # ✅ 3. 전체 이미지 보기
 elif menu == "📸 전체 상품 이미지":
     st.subheader("📸 색상별 이미지 보기")
+    cols = st.columns(3)
     for idx, row in df_color.iterrows():
-        col1, col2 = st.columns([1, 5])
-        with col1:
-            st.image(row['image_url'], width=100)
-        with col2:
+        with cols[idx % 3]:
+            st.image(row['image_url'], width=150)
             st.markdown(f"**RGB:** ({row['r']}, {row['g']}, {row['b']})")
             st.markdown(f"`{row['image_url']}`")
-        st.markdown("---")
