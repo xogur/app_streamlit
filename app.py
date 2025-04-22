@@ -55,7 +55,7 @@ if st.sidebar.button("알림 설정 전송"):
 
     # ✅ 두 DAG 실행
     trigger_dag("dags_fashion_item_trend_load")
-    trigger_dag("dags_fashion_trend_color")
+    trigger_dag("dags_fashion_trend")
 
 # 사이드바 메뉴
 menu = st.sidebar.radio(
