@@ -38,7 +38,7 @@ if st.sidebar.button("알림 설정 전송"):
     }
     try:
         resp = requests.post(
-            "http://airflow-webserver:8081/api/v1/dags/dags_fashion_item_trend_load/dagRuns",
+            "http://airflow-webserver:8080/api/v1/dags/dags_fashion_item_trend_load/dagRuns",
             auth=HTTPBasicAuth("airflow", "airflow"),
             json=payload,
             timeout=10
