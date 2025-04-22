@@ -13,7 +13,7 @@ from requests.auth import HTTPBasicAuth
 st.set_page_config(layout="wide")
 st.title("👗 Fashion Trend Dashboard")
 
-st.sidebar.header("🔔 알림 설정")
+st.sidebar.header("트렌드 분석석")
 
 # 스타일 매핑
 style_map = {
@@ -37,14 +37,37 @@ if st.sidebar.button("알림 설정 전송"):
         }
     }
     try:
+        st.sidebar.info("🚀 DAG 실행 요청 중...")
         resp = requests.post(
             "http://airflow-webserver:8080/api/v1/dags/dags_fashion_item_trend_load/dagRuns",
             auth=HTTPBasicAuth("airflow", "airflow"),
             json=payload,
             timeout=10
         )
+
         if resp.status_code in (200, 201):
-            st.sidebar.success("✅ DAG 실행 요청 완료!")
+            dag_run_id = resp.json().get("dag_run_id")
+            st.sidebar.success("✅ DAG 실행 시작됨")
+            
+            # 로딩 표시
+            with st.spinner("🔄 DAG 실행 중... 완료될 때까지 기다리는 중입니다..."):
+                status = ""
+                for _ in range(60):  # 최대 30초 대기
+                    time.sleep(1)
+                    res = requests.get(
+                        f"http://airflow-webserver:8080/api/v1/dags/dags_fashion_item_trend_load/dagRuns/{dag_run_id}",
+                        auth=HTTPBasicAuth("airflow", "airflow")
+                    )
+                    status = res.json().get("state", "unknown")
+                    if status in ("success", "failed"):
+                        break
+
+                if status == "success":
+                    st.sidebar.success("🎉 DAG 실행 완료!")
+                elif status == "failed":
+                    st.sidebar.error("❌ DAG 실패")
+                else:
+                    st.sidebar.warning(f"⏳ 아직 실행 중: 상태 = {status}")
         else:
             st.sidebar.error(f"❌ 실패: {resp.status_code} / {resp.text}")
     except Exception as e:
