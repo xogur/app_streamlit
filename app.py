@@ -6,9 +6,46 @@ import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from collections import Counter
 import webcolors
-
+# 권태혁혁
 st.set_page_config(layout="wide")
 st.title("👗 Fashion Trend Dashboard")
+
+st.sidebar.header("🔔 알림 설정")
+
+# 스타일 매핑
+style_map = {
+    "캐주얼": 8, "미니멀": 5, "스트릿": 10, "걸리시": 13, "스포티": 14,
+    "워크웨어": 6, "로맨틱": 12, "시크": 16, "시티보이": 7, "고프코어": 20,
+    "레트로": 18, "프레피": 17, "리조트": 15, "에스닉": 19
+}
+season_map = {"봄":4, "여름":3, "가을":2, "겨울":1}
+gender_map = {"남": "MEN", "여": "WOMEN"}
+
+selected_style  = st.sidebar.selectbox("스타일", list(style_map.keys()))
+selected_season = st.sidebar.selectbox("계절", list(season_map.keys()))
+selected_gender = st.sidebar.selectbox("성별", list(gender_map.keys()))
+
+if st.sidebar.button("알림 설정 전송"):
+    payload = {
+        "conf": {
+            "style":  style_map[selected_style],
+            "season": season_map[selected_season],
+            "gender": gender_map[selected_gender]
+        }
+    }
+    try:
+        resp = requests.post(
+            "http://localhost:8081/api/v1/dags/dags_fashion_item_trend_load/dagRuns",
+            auth=HTTPBasicAuth("airflow", "airflow"),
+            json=payload,
+            timeout=10
+        )
+        if resp.status_code in (200, 201):
+            st.sidebar.success("✅ DAG 실행 요청 완료!")
+        else:
+            st.sidebar.error(f"❌ 실패: {resp.status_code} / {resp.text}")
+    except Exception as e:
+        st.sidebar.error(f"🚨 요청 실패: {e}")
 
 # 사이드바 메뉴
 menu = st.sidebar.radio(
