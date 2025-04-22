@@ -36,19 +36,26 @@ if st.sidebar.button("알림 설정 전송"):
             "gender": gender_map[selected_gender]
         }
     }
-    try:
-        resp = requests.post(
-            "http://airflow-webserver:8080/api/v1/dags/dags_fashion_item_trend_load/dagRuns",
-            auth=HTTPBasicAuth("airflow", "airflow"),
-            json=payload,
-            timeout=10
-        )
-        if resp.status_code in (200, 201):
-            st.sidebar.success("✅ DAG 실행 요청 완료!")
-        else:
-            st.sidebar.error(f"❌ 실패: {resp.status_code} / {resp.text}")
-    except Exception as e:
-        st.sidebar.error(f"🚨 요청 실패: {e}")
+
+    def trigger_dag(dag_id):
+        try:
+            url = f"http://airflow-webserver:8080/api/v1/dags/{dag_id}/dagRuns"
+            resp = requests.post(
+                url,
+                auth=HTTPBasicAuth("airflow", "airflow"),
+                json=payload,
+                timeout=10
+            )
+            if resp.status_code in (200, 201):
+                st.sidebar.success(f"✅ {dag_id} 실행 완료")
+            else:
+                st.sidebar.error(f"❌ {dag_id} 실패: {resp.status_code} / {resp.text}")
+        except Exception as e:
+            st.sidebar.error(f"🚨 {dag_id} 요청 실패: {e}")
+
+    # ✅ 두 DAG 실행
+    trigger_dag("dags_fashion_item_trend_load")
+    trigger_dag("dags_fashion_trend_color")
 
 # 사이드바 메뉴
 menu = st.sidebar.radio(
