@@ -9,7 +9,7 @@ import webcolors
 import requests
 from requests.auth import HTTPBasicAuth
 
-# 권태혁혁
+
 st.set_page_config(layout="wide")
 st.title("👗 Fashion Trend Dashboard")
 
